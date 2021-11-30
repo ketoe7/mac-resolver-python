@@ -26,7 +26,7 @@ docker container run --rm mac_resolver "-m <MAC_ADDRESS> -k <API_KEY_TO_MACADDRE
 ```
 Alternatively it is possible to run application locally by installing python3.9 and 
 python modules from [requirements.txt](./requirements.txt).
-**NOTICE**: application was tested only on Ubuntu 20.04 and Alpine 3.15 but should work also on other operating systems.
+**NOTICE**: application was tested only on Ubuntu 20.04 and Alpine 3.15 with python3.9 but should work also on other operating systems.
 
 ## Features
 
