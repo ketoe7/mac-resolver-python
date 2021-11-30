@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """MAC Address Resolver.
 
-This script allows the user to resolve given MAC address to the
+This script allows the user to resolve a given MAC address to the
 associated vendor.
 
 This tool accepts the following arguments:
     * -m,--mac     - a MAC address which should be resolved.
-    * -k,--api_key - an API key to authenticate 3rd party tool macaddress.io
-    * -v,--verbose - makes output more verbose.
+    * -k,--api_key - an API key to authenticate the 3rd party
+                     tool macaddress.io
+    * -v,--verbose - make output more verbose.
     * -h,--help    - display detailed description of syntax and arguments.
 
 This script requires the following modules to be install within the
@@ -17,7 +18,7 @@ Python environment you are running this script in:
 This file can also be imported as a module and contains the following
 classes and functions:
 
-    * MacResolver - base class which represents a handler for MAC address
+    * MacResolver - base class which represents a handler for the MAC address
                     resolving.
 """
 
@@ -39,7 +40,7 @@ class HTTPError(Exception):
 
 
 class WrongMacFormat(Exception):
-    """Raised when MacResolver get wrong Mac address as an parameter"""
+    """Raised when MacResolver gets a wrong Mac address as an parameter"""
     pass
 
 
@@ -49,7 +50,7 @@ class MacResolver:
     Attributes
     ----------
     MACADDRESS_HOSTNAME : str
-        class attribute which stores the hostname of 3rd party tool used to
+        class attribute which stores the hostname of the 3rd party tool used to
         resolve the MAC address.
     MACADDRESS_API_URL : str
         class attribute which stores a full url to API of MACADDRESS_HOSTNAME.
@@ -62,10 +63,10 @@ class MacResolver:
     Methods
     -------
     resolve(mac)
-        Query 3rd party tool in order to resolve given MAC address to
+        Query the 3rd party API in order to resolve given MAC address to
         a specific vendor.
     handle_http_errors(status_code)
-        Handle possible HTTP errors returned by 3rd party tool.
+        Handle possible HTTP errors returned by the 3rd party API.
     """
 
     MACADDRESS_HOSTNAME = 'macaddress.io'
@@ -82,9 +83,9 @@ class MacResolver:
         self.api_key = api_key
 
     def resolve(self, mac: str, return_json: bool = False) -> str:
-        """Returns the associated vendor with given MAC address.
+        """Returns the associated vendor with a given MAC address.
 
-        If the optional argument `return_json` is to True a json containing
+        If the optional argument `return_json` is set to True a json containing
         MAC address and associated vendor is returned.
 
         Parameters
@@ -92,7 +93,7 @@ class MacResolver:
         mac : str
             The MAC address which should be resolved.
         return_json : bool, optional
-            if set to True the method will return a json object with resolved
+            if set to True the method will return a json object with a resolved
             company in format {"<mac_address>": "company"} (default is False)
 
         Raises
@@ -107,16 +108,16 @@ class MacResolver:
         Returns
         -------
         vendor : str
-            Vendor associated with given MAC address
+            Vendor associated with a given MAC address
         """
 
         # check if format of the given MAC address is correct
         pattern = r'[0-9a-f]{2}([-:.]?)[0-9a-f]{2}(\1[0-9a-f]{2}){4}$'
         if not re.match(pattern, mac.lower()):
             raise WrongMacFormat(
-                'Wrong format of MAC address! Provide correct MAC address in '
-                'the following format: XX:XX:XX:XX:XX:XX where X represents '
-                'the hexadecimal digit'
+                'Wrong format of MAC address! Provide the correct MAC address '
+                'in the following format: XX:XX:XX:XX:XX:XX where X '
+                'represents the hexadecimal digit'
             )
 
         headers = {"X-Authentication-Token": self.api_key}
@@ -159,8 +160,8 @@ class MacResolver:
 
     @classmethod
     def handle_http_errors(cls, status_code: int) -> str:
-        """Returns a message containing a description of the HTTP error
-        identified by given status_code.
+        """Returns a message which contains a description of the HTTP error
+        identified by a given status_code.
 
         Parameters
         ----------
@@ -182,7 +183,7 @@ class MacResolver:
         elif status_code == 402:
             msg = f'Access restricted. Check the credits balance on the '
             f'account of  {cls.MACADDRESS_HOSTNAME} associated with provided '
-            f'API key ({cls.api_key}).'
+            f'API key.'
         elif status_code == 422:
             # It should not be possible to get this error because MAC address
             # from the user is already validated.
@@ -208,7 +209,7 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
 
     parser = argparse.ArgumentParser(
-        description='Process query to Mac Address API.'
+        description='Process query to a Mac Address API.'
     )
 
     parser.add_argument(
@@ -232,7 +233,7 @@ if __name__ == '__main__':
         '--verbose',
         dest='verbose',
         action='store_true',
-        help='Print detailed info, not only vendor company'
+        help='Makes output more verbose'
     )
 
     args = parser.parse_args()
@@ -251,6 +252,6 @@ if __name__ == '__main__':
         logger.error(e)
     else:
         logger.info(
-            f'MAC address {args.mac} is associated with vendor '
+            f'MAC address {args.mac} is associated with a vendor '
             f'"{associated_vendor}"'
         )
