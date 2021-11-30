@@ -2,7 +2,7 @@
 """MAC Address Resolver.
 
 This script allows the user to resolve given MAC address to the
-associated company.
+associated vendor.
 
 This tool accepts the following arguments:
     * -m,--mac     - a MAC address which should be resolved.
@@ -29,14 +29,17 @@ import re
 
 
 class NetworkError(Exception):
+    """Raised when resolve method cannot connect with macaddress.io"""
     pass
 
 
 class HTTPError(Exception):
+    """Raised when macaddress.io responds with an HTTP error"""
     pass
 
 
 class WrongMacFormat(Exception):
+    """Raised when MacResolver get wrong Mac address as an parameter"""
     pass
 
 
@@ -61,7 +64,7 @@ class MacResolver:
     resolve(mac)
         Query 3rd party tool in order to resolve given MAC address to
         a specific vendor.
-    handle_error(status_code)
+    handle_http_errors(status_code)
         Handle possible HTTP errors returned by 3rd party tool.
     """
 
@@ -79,10 +82,10 @@ class MacResolver:
         self.api_key = api_key
 
     def resolve(self, mac: str, return_json: bool = False) -> str:
-        """Prints what the animals name is and what sound it makes.
+        """Returns the associated vendor with given MAC address.
 
-        If the argument `sound` isn't passed in, the default Animal
-        sound is used.
+        If the optional argument `return_json` is to True a json containing
+        MAC address and associated vendor is returned.
 
         Parameters
         ----------
@@ -91,6 +94,7 @@ class MacResolver:
         return_json : bool, optional
             if set to True the method will return a json object with resolved
             company in format {"<mac_address>": "company"} (default is False)
+
         Raises
         ------
         NetworkError
@@ -99,6 +103,11 @@ class MacResolver:
             If macaddress.io responses with HTTP error.
         WrongMacFormat
             If 'mac' variable is not in correct format of MAC address.
+
+        Returns
+        -------
+        vendor : str
+            Vendor associated with given MAC address
         """
 
         # check if format of the given MAC address is correct
@@ -141,7 +150,7 @@ class MacResolver:
             else:
                 return response.text
         else:
-            reason = self.handle_errors(response.status_code)
+            reason = self.handle_http_errors(response.status_code)
             raise HTTPError(
                 f'Error detected in the response from '
                 f'{self.MACADDRESS_API_URL} for MAC address {mac}. '
@@ -149,16 +158,19 @@ class MacResolver:
             )
 
     @classmethod
-    def handle_errors(cls, status_code: int) -> str:
-        """Prints what the animals name is and what sound it makes.
-
-        If the argument `sound` isn't passed in, the default Animal
-        sound is used.
+    def handle_http_errors(cls, status_code: int) -> str:
+        """Returns a message containing a description of the HTTP error
+        identified by given status_code.
 
         Parameters
         ----------
         status_code : int
-            Status code of the HTTP response which should be handled
+            Status code of the HTTP response which should be handled.
+
+        Returns
+        -------
+        msg : str
+            Message with description of the HTTP error.
         """
 
         if status_code == 400:
@@ -213,7 +225,7 @@ if __name__ == '__main__':
         '--api-key',
         dest='api_key',
         required=True,
-        help='API key to authenticate macaddress.io'
+        help='API key to authenticate your macaddress.io account'
     )
     parser.add_argument(
         '-v',
